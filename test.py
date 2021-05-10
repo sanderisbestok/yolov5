@@ -31,13 +31,14 @@ def test(data,
          model=None,
          dataloader=None,
          save_dir=Path(''),  # for saving images
-         save_txt=False,  # for auto-labelling
+         save_txt=True,  # for auto-labelling
          save_hybrid=False,  # for hybrid auto-labelling
-         save_conf=False,  # save auto-label confidences
+         save_conf=True,  # save auto-label confidences
          plots=True,
          wandb_logger=None,
          compute_loss=None,
-         is_coco=False):
+         is_coco=False,
+         epoch=0):
     # Initialize/load model and set device
     training = model is not None
     if training:  # called by train.py
@@ -139,11 +140,12 @@ def test(data,
 
             # Append to text file
             if save_txt:
+                os.makedirs(os.path.join(save_dir, 'txt_results', str(epoch)), exist_ok = True)
                 gn = torch.tensor(shapes[si][0])[[1, 0, 1, 0]]  # normalization gain whwh
                 for *xyxy, conf, cls in predn.tolist():
                     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
                     line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
-                    with open(save_dir / 'labels' / (path.stem + '.txt'), 'a') as f:
+                    with open(save_dir / 'txt_results' / str(epoch) / (path.stem + '.txt'), 'a') as f:
                         f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
             # W&B logging - Media Panel Plots
@@ -214,6 +216,7 @@ def test(data,
             Thread(target=plot_images, args=(img, output_to_target(out), paths, f, names), daemon=True).start()
 
     # Compute statistics
+    # mean van p en r omdat het meerdere labels kan hebben
     stats = [np.concatenate(x, 0) for x in zip(*stats)]  # to numpy
     if len(stats) and stats[0].any():
         p, r, ap, f1, ap_class = ap_per_class(*stats, plot=plots, save_dir=save_dir, names=names)
