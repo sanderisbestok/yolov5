@@ -143,8 +143,11 @@ def test(data,
                 os.makedirs(os.path.join(save_dir, 'txt_results', str(epoch)), exist_ok = True)
                 gn = torch.tensor(shapes[si][0])[[1, 0, 1, 0]]  # normalization gain whwh
                 for *xyxy, conf, cls in predn.tolist():
-                    xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                    line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
+                    # xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
+                    # als het goed is niet genormaliseerd
+                    xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4))).view(-1).tolist()
+                    # cls + 1 anders gaat het fout dit nog uitzoeken
+                    line = ((int(cls) + 1), conf, *xywh) if save_conf else (cls, *xywh)  # label format
                     with open(save_dir / 'txt_results' / str(epoch) / (path.stem + '.txt'), 'a') as f:
                         f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
