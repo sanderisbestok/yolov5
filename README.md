@@ -43,7 +43,7 @@ The following job can be used to train the network if the network is installed i
 
 ```
 #!/bin/bash
-#SBATCH -t 08:00:00
+#SBATCH -t 06:00:00
 
 #SBATCH -p gpu
 #SBATCH -N 1
@@ -55,9 +55,9 @@ module load Anaconda3/2020.02
 mkdir $TMPDIR/sander
 cp -r $HOME/data $TMPDIR/sander/
 
-conda activate yolov5
+source activate /home/hansen/.conda/envs/yolov5/
 cd ~/networks/yolov5/
-python train.py --img 640 --batch 16 --epochs 300 --data ego.yaml --weights yolov5x.pt
+python train.py --img 640 --batch 16 --epochs 100000 --data ego.yaml --weights yolov5x.pt
 ```
 
 ## Testing
