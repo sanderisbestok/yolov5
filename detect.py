@@ -115,7 +115,6 @@ def detect(save_img=False):
                         if xywh[3] < 0:
                             xywh[3] = 0
 
-                        print(xywh)
                         line = (cls + 1, conf, *xywh) if opt.save_conf else (cls, *xywh)  # label format
                         with open(txt_path + '.txt', 'a') as f:
                             f.write(('%g ' * len(line)).rstrip() % line + '\n')
