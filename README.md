@@ -60,8 +60,15 @@ cd ~/networks/yolov5/
 python train.py --img 640 --batch 16 --epochs 100000 --data ego.yaml --weights yolov5x.pt
 ```
 
-## Testing
-As of this moment, testing is build into the training stage. So during the training the results will be saved. No later testing is needed.
+## Validation & testing
+As of this moment, validation is build into the training stage. So during the training the results will be saved.
+
+### Testing
+To do the actual testing on a test database instead of validation you can use the following command
+
+```
+python detect.py --source ~/data/extremenet/images/test/ --weights ~/weights/experiment_1/yolov5_best.pt --conf 0.00 --save-txt --save-conf
+```
 
 ## Extra
 YoloV5 visualiser can be used with the following command:
