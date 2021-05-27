@@ -104,7 +104,19 @@ def detect(save_img=False):
                 for *xyxy, conf, cls in reversed(det):
                     if save_txt:  # Write to file
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                        line = (cls, *xywh, conf) if opt.save_conf else (cls, *xywh)  # label format
+                        
+                        # originally it is x and y center, we do not want this
+                        xywh = torch.tensor(xyxy).view(1, 4).view(-1).tolist()
+                        xywh[2] = xywh[2] - xywh[0]
+                        xywh[3] = xywh[3] - xywh[1]
+
+                        if xywh[2] < 0:
+                            xywh[2] = 0
+                        if xywh[3] < 0:
+                            xywh[3] = 0
+
+                        print(xywh)
+                        line = (cls + 1, conf, *xywh) if opt.save_conf else (cls, *xywh)  # label format
                         with open(txt_path + '.txt', 'a') as f:
                             f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
